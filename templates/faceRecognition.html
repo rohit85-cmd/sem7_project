@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+  href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.css"
+  rel="stylesheet"
+/>
+    <title>Login</title>
+</head>
+<body>
+  
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Face Recognition System</a>
+  </nav>
+
+  <div class="h-100 py-5 d-flex align-items-center justify-content-center container">
+    <img alt="Loading..." src="{{ url_for('video') }}"/>
+    <div class="px-5">
+      <p>Click Below button to see present students</p>
+      <a href="/list"><button type="button" class="btn btn-secondary">Click Here</button></a>
+    </div>
+  </div>
+    
+</body>
+</html>
