@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response,send_file
 import cv2
 import face_recognition
 import numpy as np
@@ -6,25 +6,34 @@ import os
 from datetime import datetime
 import csv
 import smtplib
-import winsound
+import winsound,sys
+import imutils
 
 from dotenv import load_dotenv
 load_dotenv()
 
-    
+      
 sender_email = os.getenv('mail')
 print(sender_email)
 # password = input(str("Enter your gmail password: "))
 password = os.getenv('password')
-server = smtplib.SMTP('smtp.gmail.com', 587)
-server.starttls()
-server.login(sender_email, password)
-print("Login successful to your gmail account")
+
+
+try:
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(sender_email, password)
+    print("Login successful to your gmail account")
+except smtplib.SMTPAuthenticationError:
     
+    print("Either Password is wrong or there is no network connection")
+    sys.exit()
 
 app = Flask(__name__)
-
+# url = 'http://192.168.121.76:8080/video'  
 camera = cv2.VideoCapture(0)
+
+
 
 ### implemented dictionary ###
 nameMail = {'Rohit Jindamwar': 'rohitjindamwar123@gmail.com',
@@ -84,13 +93,12 @@ count = 0
 def generate_frames():
     
     while True:
-
-        # read the camera frame
         success, frame = camera.read()
         if not success:
             break
         else:
             imgS = cv2.resize(frame, (0, 0), None, 0.25, 0.25)
+            # imgS = cv2.resize(frame, (176,144))
             imgS = cv2.cvtColor(imgS, cv2.COLOR_BGR2RGB)  # converted to RGB
 
             if check:
@@ -125,15 +133,13 @@ def generate_frames():
                         print(name)
                         sound()
                         
-                        current_time = now.strftime("%I:%M %p")
+                        current_time = now.strftime("%I:%M:%S %p")
                         if name not in presenty:
                             presenty[name]=current_time
                         students.remove(name)
 
                         
-
-                        
-                        with open(currentDate+'.csv', 'w+', newline='') as f:
+                        with open(currentDate+'.csv', 'a', newline='') as f:
                             lnwriter = csv.writer(f)
                             lnwriter.writerow([name,current_time])
                         
@@ -142,14 +148,15 @@ def generate_frames():
                             server.sendmail(sender_email,nameMail[name] , message)
                             print("Email sent to ", nameMail[name])
 
-        if(cv2.waitKey(1)& 0xFF==ord('q')):
+        if(cv2.waitKey(1)==27):
             break
+    
 
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
 
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    cv2.destroyAllWindows()
         
 
 
@@ -160,13 +167,21 @@ def index():
 @app.route('/list')
 def printlist():
     return render_template('presenty.html',present=presenty, length = len(presenty))
-  
+
 
 
 @app.route('/video')
 def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
+@app.route('/download')
+def download_file():
+    now = datetime.now()
+    currentDate = now.strftime("%Y-%m-%d")
+    p = currentDate+".csv"
+
+    return send_file(p,as_attachment=True)
 
 if __name__ == "__main__":
     app.run(debug=True)

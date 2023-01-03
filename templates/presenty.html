@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.css" rel="stylesheet" />
-  <title>Document</title>
+  <title>Prsentee Page</title>
 </head>
 
 <body>
@@ -21,18 +21,14 @@
       <table class="table table-fixed">
         <thead>
           <tr>
-            <!-- <th scope="col">Sr No</thscope></th> -->
             <th scope="col">Name</th>
             <th scope="col">Time</th>
-
           </tr>
         </thead>
         {% for item in present %}
-
-
         <tbody>
           <tr>
-            <!-- <td>{{ length-1 }}</td> -->
+            
             <td>{{ item }}</td>
             <td>{{ present[item] }}</td>
 
@@ -43,7 +39,14 @@
       {% endfor %}
     </table>
     </div>
-    
+    <div>
+      <div style ="text-align: left;">
+        <a href="/"><button type="button" class="btn btn-secondary">Go Back</button></a>
+      </div>
+      <div style ="text-align: right;">
+        <a href="{{ url_for('download_file') }}"><button type="button" class="btn btn-secondary">Download Current csv</button></a>
+      </div>
+    </div>
   </div>
 </body>
 
