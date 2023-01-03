@@ -148,7 +148,7 @@ def generate_frames():
                             server.sendmail(sender_email,nameMail[name] , message)
                             print("Email sent to ", nameMail[name])
 
-        if(cv2.waitKey(1)==27):
+        if(cv2.waitKey(1)& 0xFF==ord('q')):
             break
     
 
